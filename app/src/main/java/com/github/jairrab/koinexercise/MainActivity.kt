@@ -10,40 +10,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
-class MainActivity : AppCompatActivity() {
-    // Lazy injected MySimplePresenter
-    private val firstPresenter: MySimplePresenter by inject()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        Log.v("koin_test", firstPresenter.sayHello())
-    }
-}
-
-interface HelloRepository {
-    fun giveHello(): String
-}
-
-class HelloRepositoryImpl() : HelloRepository {
-    override fun giveHello() = "Hello Koin"
-}
-
-class MySimplePresenter(private val repo: HelloRepository) {
-    fun sayHello() = "${repo.giveHello()} from $this"
-}
-
-object Modules {
-    val appModule = module {
-        // single instance of HelloRepository
-        single<HelloRepository> { HelloRepositoryImpl() }
-
-        // Simple Presenter Factory
-        factory { MySimplePresenter(get()) }
-    }
-}
-
+//region APPLICATION
 class MyApplication : Application(){
     override fun onCreate() {
         super.onCreate()
@@ -55,3 +22,46 @@ class MyApplication : Application(){
         }
     }
 }
+//endregion
+
+//region MAIN ACTIVITY
+class MainActivity : AppCompatActivity() {
+    // Lazy injected MySimplePresenter
+    private val firstPresenter: MySimplePresenter by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        Log.v("koin_test", firstPresenter.sayHello())
+    }
+}
+//endregion
+
+//region REPOSITORY
+interface HelloRepository {
+    fun giveHello(): String
+}
+
+class HelloRepositoryImpl() : HelloRepository {
+    override fun giveHello() = "Hello Koin"
+}
+//endregion
+
+//region PRESENTER
+class MySimplePresenter(private val repo: HelloRepository) {
+    fun sayHello() = "${repo.giveHello()} from $this"
+}
+//endregion
+
+//region KOIN MODULES
+object Modules {
+    val appModule = module {
+        // single instance of HelloRepository
+        single<HelloRepository> { HelloRepositoryImpl() }
+
+        // Simple Presenter Factory
+        factory { MySimplePresenter(get()) }
+    }
+}
+//endregion
