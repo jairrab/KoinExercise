@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/module_1_fragment_a">
+
+    <fragment
+        android:id="@+id/module_1_fragment_a"
+        android:name="com.github.jairrab.koinexercise.Module1FragmentA"
+        android:label="StateFlowLauncher"
+        tools:layout="@layout/module_1_fragment_a">
+        <action
+            android:id="@+id/action_module_1_fragment_a_to_module_1_fragment_b"
+            app:destination="@id/module_1_fragment_b" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/module_1_fragment_b"
+        android:name="com.github.jairrab.koinexercise.Module1FragmentB"
+        android:label="StateFlowLauncher"
+        tools:layout="@layout/module_1_fragment_b">
+    </fragment>
+
+</navigation>

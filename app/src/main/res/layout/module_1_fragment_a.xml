@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:background="#E6EE9C"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:text="Fragment A"
+        android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text1"
@@ -35,47 +43,20 @@
         app:autoSizeTextType="uniform"
         tools:text="Hello World!" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/text3"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:background="#FFE082"
-        android:padding="10dp"
-        app:autoSizeMaxTextSize="15sp"
-        app:autoSizeTextType="uniform"
-        tools:text="Hello World!" />
-
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button"
+        android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:text="Test Process Death" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp">
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
-    </androidx.cardview.widget.CardView>
-
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:text="Go to Module 1 Fragment B" />
 
 </LinearLayout>
