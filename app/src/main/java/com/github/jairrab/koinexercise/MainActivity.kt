@@ -307,15 +307,15 @@ object Modules {
         viewModel { ActivityViewModel(get(), get()) }
 
         scope<Module1FragmentA> {
-            scoped { Module1FragmentAViewModel(get(), get()) }
+            viewModel { Module1FragmentAViewModel(get(), get()) }
         }
 
         scope<Module1FragmentB> {
-            scoped { Module1FragmentBViewModel(get(), get()) }
+            viewModel { Module1FragmentBViewModel(get(), get()) }
         }
 
         scope<Module1FragmentC> {
-            scoped { Module1FragmentCViewModel(get(), get()) }
+            viewModel { Module1FragmentCViewModel(get(), get()) }
         }
     }
 }
