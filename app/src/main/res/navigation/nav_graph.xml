@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/module_1_fragment_a"
         android:name="com.github.jairrab.koinexercise.Module1FragmentA"
-        android:label="StateFlowLauncher"
+        android:label="module_1_fragment_a"
         tools:layout="@layout/module_1_fragment_a">
         <action
             android:id="@+id/action_module_1_fragment_a_to_module_1_fragment_b"
@@ -18,8 +18,22 @@
     <fragment
         android:id="@+id/module_1_fragment_b"
         android:name="com.github.jairrab.koinexercise.Module1FragmentB"
-        android:label="StateFlowLauncher"
+        android:label="module_1_fragment_b"
         tools:layout="@layout/module_1_fragment_b">
+        <action
+            android:id="@+id/action_module_1_fragment_b_to_module_1_fragment_C"
+            app:destination="@id/module_1_fragment_C" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/module_1_fragment_C"
+        android:name="com.github.jairrab.koinexercise.Module1FragmentC"
+        android:label="module_1_fragment_C"
+        tools:layout="@layout/module_1_fragment_c">
+        <argument
+            android:name="data_1"
+            android:defaultValue="Tree"
+            app:argType="string" />
     </fragment>
 
 </navigation>

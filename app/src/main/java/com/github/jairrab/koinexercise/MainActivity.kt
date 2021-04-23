@@ -7,19 +7,17 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import com.github.jairrab.koinexercise.databinding.ActivityMainBinding
 import com.github.jairrab.koinexercise.databinding.Module1FragmentABinding
 import com.github.jairrab.koinexercise.databinding.Module1FragmentBBinding
+import com.github.jairrab.koinexercise.databinding.Module1FragmentCBinding
 import com.github.jairrab.viewbindingutility.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityRetainedScope
 import org.koin.androidx.scope.activityScope
 import org.koin.androidx.scope.fragmentScope
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -62,13 +60,13 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        viewModel.stringArgsLd.observe(this) {
+        viewModel.stringArgsLd.observe(this, Observer {
             binding.text1.text = it
-        }
+        })
 
-        viewModel.helloLd.observe(this) {
+        viewModel.helloLd.observe(this, Observer {
             binding.text2.text = it
-        }
+        })
 
         binding.text3.isVisible = false
         binding.text3.text = presenter.sayHello()
@@ -82,13 +80,12 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
 class ActivityViewModel(
     savedStateHandle: SavedStateHandle,
     private val repo: HelloRepository,
-) : ViewModel() {
+) : BaseViewModel(savedStateHandle) {
     val stringArgsLd = savedStateHandle.getLiveData<String>("main_activity_args")
     val helloLd = MutableLiveData<String>()
 
     init {
         Log.v("koin_test", "Initializing $this")
-        Log.v("koin_test", "Initializing HelloRepository $repo")
     }
 
     fun testProcessDeath() {
@@ -120,13 +117,13 @@ class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a), AndroidScop
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.stringArgsLd.observe(viewLifecycleOwner) {
+        viewModel.stringArgsLd.observe(viewLifecycleOwner, Observer {
             binding.text1.text = it
-        }
+        })
 
-        viewModel.helloLd.observe(viewLifecycleOwner) {
+        viewModel.helloLd.observe(viewLifecycleOwner, Observer {
             binding.text2.text = it
-        }
+        })
 
         binding.button1.setOnClickListener {
             viewModel.testProcessDeath()
@@ -143,13 +140,12 @@ class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a), AndroidScop
 class Module1FragmentAViewModel(
     savedStateHandle: SavedStateHandle,
     private val repo: HelloRepository,
-) : ViewModel() {
+) : BaseViewModel(savedStateHandle) {
     val stringArgsLd = savedStateHandle.getLiveData<String>("frag_a_args")
     val helloLd = MutableLiveData<String>()
 
     init {
         Log.v("koin_test", "Initializing $this")
-        Log.v("koin_test", "Initializing HelloRepository $repo")
     }
 
     fun testProcessDeath() {
@@ -177,13 +173,75 @@ class Module1FragmentB : BaseFragment(R.layout.module_1_fragment_b), AndroidScop
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.stringArgsLd.observe(viewLifecycleOwner) {
+        viewModel.stringArgsLd.observe(viewLifecycleOwner, Observer {
             binding.text1.text = it
+        })
+
+        viewModel.helloLd.observe(viewLifecycleOwner, Observer {
+            binding.text2.text = it
+        })
+
+        binding.button1.setOnClickListener {
+            viewModel.testProcessDeath()
         }
 
-        viewModel.helloLd.observe(viewLifecycleOwner) {
-            binding.text2.text = it
+        binding.button2.setOnClickListener {
+            navigate(
+                Module1FragmentBDirections.actionModule1FragmentBToModule1FragmentC(
+                    data1 = "SavedStateHandle initialized w/ Fragment B bundle"
+                )
+            )
         }
+
+        binding.button3.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+}
+
+class Module1FragmentBViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val repo: HelloRepository,
+) : BaseViewModel(savedStateHandle) {
+    val stringArgsLd = savedStateHandle.getLiveData<String>("frag_b_args")
+    val helloLd = MutableLiveData<String>()
+
+    init {
+        Log.v("koin_test", "Initializing $this")
+    }
+
+    fun testProcessDeath() {
+        val giveHello = repo.giveHello()
+        helloLd.value = "NON-SAVED STATE\n$giveHello"
+        stringArgsLd.value = "SAVED STATE\n$giveHello"
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.v("koin_test", "Cleared $this")
+    }
+}
+//endregion
+
+//region FRAGMENT C
+class Module1FragmentC : BaseFragment(R.layout.module_1_fragment_c), AndroidScopeComponent {
+    private val binding by viewBinding { Module1FragmentCBinding.bind(it) }
+
+    override val scope: Scope by fragmentScope()
+    private val viewModel by stateViewModel<Module1FragmentCViewModel>(
+        state = { requireArguments() }
+    )
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.stringArgsLd.observe(viewLifecycleOwner, Observer {
+            binding.text1.text = it
+        })
+
+        viewModel.helloLd.observe(viewLifecycleOwner, Observer {
+            binding.text2.text = it
+        })
 
         binding.button1.setOnClickListener {
             viewModel.testProcessDeath()
@@ -195,16 +253,18 @@ class Module1FragmentB : BaseFragment(R.layout.module_1_fragment_b), AndroidScop
     }
 }
 
-class Module1FragmentBViewModel(
+class Module1FragmentCViewModel(
     savedStateHandle: SavedStateHandle,
     private val repo: HelloRepository,
-) : ViewModel() {
-    val stringArgsLd = savedStateHandle.getLiveData<String>("frag_b_args")
+) : BaseViewModel(savedStateHandle) {
+    private val args: Module1FragmentCArgs by navArgs()
+
+    val stringArgsLd = savedStateHandle.getLiveData("some_string", args.data1)
+
     val helloLd = MutableLiveData<String>()
 
     init {
         Log.v("koin_test", "Initializing $this")
-        Log.v("koin_test", "Initializing HelloRepository $repo")
     }
 
     fun testProcessDeath() {
@@ -252,6 +312,10 @@ object Modules {
 
         scope<Module1FragmentB> {
             scoped { Module1FragmentBViewModel(get(), get()) }
+        }
+
+        scope<Module1FragmentC> {
+            scoped { Module1FragmentCViewModel(get(), get()) }
         }
     }
 }

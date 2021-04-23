@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A5D6A7"
+    android:background="#80DEEA"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="10dp"
-        android:text="Fragment B"
+        android:text="Fragment C"
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -53,14 +53,6 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="0dp"
-        android:text="Go to Module 1 Fragment C" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
