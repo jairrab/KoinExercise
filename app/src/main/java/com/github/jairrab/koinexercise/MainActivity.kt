@@ -292,6 +292,8 @@ class HelloRepositoryImpl() : HelloRepository {
 
 //region KOIN MODULES
 object Modules {
+    //this are my rebase changes
+
     val appModule = module {
         //factory - to produce a new instance each time the by inject() or get() is called
         //factory { MySimplePresenter(get()) }
