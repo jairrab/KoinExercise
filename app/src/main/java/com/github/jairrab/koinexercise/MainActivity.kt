@@ -320,6 +320,8 @@ object Modules {
         scope<Module1FragmentC> {
             viewModel { Module1FragmentCViewModel(get(), get()) }
         }
+
+        //another set of changes
     }
 }
 //endregion
