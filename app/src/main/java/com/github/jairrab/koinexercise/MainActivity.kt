@@ -9,19 +9,17 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
-import com.github.jairrab.koinexercise.databinding.ActivityMainBinding
-import com.github.jairrab.koinexercise.databinding.Module1FragmentABinding
-import com.github.jairrab.koinexercise.databinding.Module1FragmentBBinding
-import com.github.jairrab.koinexercise.databinding.Module1FragmentCBinding
+import com.github.jairrab.koinexercise.databinding.*
 import com.github.jairrab.viewbindingutility.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.activityScope
-import org.koin.androidx.scope.fragmentScope
+import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -106,10 +104,9 @@ class MySimplePresenter() {
 //endregion
 
 //region FRAGMENT A
-class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a), AndroidScopeComponent {
+class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a) {
     private val binding by viewBinding { Module1FragmentABinding.bind(it) }
 
-    override val scope: Scope by fragmentScope()
     private val viewModel by stateViewModel<Module1FragmentAViewModel>(
         state = { bundleOf("frag_a_args" to "SavedStateHandle initialized w/ Fragment A bundle") }
     )
@@ -162,10 +159,10 @@ class Module1FragmentAViewModel(
 //endregion
 
 //region FRAGMENT B
-class Module1FragmentB : BaseFragment(R.layout.module_1_fragment_b), AndroidScopeComponent {
+class Module1FragmentB : BaseFragment(R.layout.module_1_fragment_b) {
     private val binding by viewBinding { Module1FragmentBBinding.bind(it) }
 
-    override val scope: Scope by fragmentScope()
+    //override val scope: Scope by fragmentScope()
     private val viewModel by stateViewModel<Module1FragmentBViewModel>(
         state = { requireArguments() }
     )
@@ -224,10 +221,9 @@ class Module1FragmentBViewModel(
 //endregion
 
 //region FRAGMENT C
-class Module1FragmentC : BaseFragment(R.layout.module_1_fragment_c), AndroidScopeComponent {
+class Module1FragmentC : BaseFragment(R.layout.module_1_fragment_c) {
     private val binding by viewBinding { Module1FragmentCBinding.bind(it) }
 
-    override val scope: Scope by fragmentScope()
     private val viewModel by stateViewModel<Module1FragmentCViewModel>(
         state = { requireArguments() }
     )
@@ -248,6 +244,10 @@ class Module1FragmentC : BaseFragment(R.layout.module_1_fragment_c), AndroidScop
         }
 
         binding.button2.setOnClickListener {
+            navigate(R.id.action_module_1_fragment_c_to_module_1_fragment_d)
+        }
+
+        binding.button3.setOnClickListener {
             findNavController().popBackStack()
         }
     }
@@ -280,6 +280,80 @@ class Module1FragmentCViewModel(
 }
 //endregion
 
+//region FRAGMENT D
+class Module1FragmentD : BaseFragment(R.layout.module_1_fragment_d) {
+    private val binding by viewBinding { Module1FragmentDBinding.bind(it) }
+    private val viewModel by viewModel<Module1FragmentDViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.data.observe(viewLifecycleOwner, Observer {
+            binding.text1.text = it
+        })
+
+        childFragmentManager.beginTransaction().let { transaction ->
+            transaction.add(R.id.fragment_1, Module1FragmentDChildA())
+            transaction.commit()
+        }
+
+        childFragmentManager.beginTransaction().let { transaction ->
+            transaction.add(R.id.fragment_2, Module1FragmentDChildB())
+            transaction.commit()
+        }
+
+        binding.button1.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+}
+
+class Module1FragmentDChildA : BaseFragment(R.layout.module_1_fragment_d_child_a) {
+    private val binding by viewBinding { Module1FragmentDChildABinding.bind(it) }
+    private val viewModel by sharedViewModel<Module1FragmentDViewModel>(
+        owner = { ViewModelOwner.from(requireParentFragment(), requireParentFragment()) }
+    )
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.data.observe(viewLifecycleOwner, Observer {
+            binding.text1.text = it
+        })
+    }
+}
+
+class Module1FragmentDChildB : BaseFragment(R.layout.module_1_fragment_d_child_b) {
+    private val binding by viewBinding { Module1FragmentDChildBBinding.bind(it) }
+    private val viewModel by sharedViewModel<Module1FragmentDViewModel>(
+        owner = { ViewModelOwner.from(requireParentFragment(), requireParentFragment()) }
+    )
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.data.observe(viewLifecycleOwner, Observer {
+            binding.text1.text = it
+        })
+    }
+}
+
+class Module1FragmentDViewModel(
+) : ViewModel() {
+
+    val data = liveData {
+        emit("Hello from $this")
+    }
+
+    init {
+        Log.v("koin_test", "Initializing $this")
+    }
+
+    override fun onCleared() {
+        Log.v("koin_test", "Cleared $this")
+        super.onCleared()
+    }
+}
+//endregion
+
 //region REPOSITORY
 interface HelloRepository {
     fun giveHello(): String
@@ -292,9 +366,6 @@ class HelloRepositoryImpl() : HelloRepository {
 
 //region KOIN MODULES
 object Modules {
-    //this are my rebase changes
-    //other changes...
-
     val appModule = module {
         //factory - to produce a new instance each time the by inject() or get() is called
         //factory { MySimplePresenter(get()) }
@@ -309,19 +380,33 @@ object Modules {
 
         viewModel { ActivityViewModel(get(), get()) }
 
-        scope<Module1FragmentA> {
-            viewModel { Module1FragmentAViewModel(get(), get()) }
+        viewModel { Module1FragmentAViewModel(get(), get()) }
+
+        viewModel { Module1FragmentBViewModel(get(), get()) }
+
+        viewModel { Module1FragmentCViewModel(get(), get()) }
+
+        viewModel { Module1FragmentDViewModel() }
+
+        /*scope<Module1FragmentD> {
+            viewModel { Module1FragmentDViewModel() }
         }
 
-        scope<Module1FragmentB> {
-            viewModel { Module1FragmentBViewModel(get(), get()) }
+        scope<Module1FragmentDChildA> {
+            viewModel { Module1FragmentDViewModel() }
         }
 
-        scope<Module1FragmentC> {
-            viewModel { Module1FragmentCViewModel(get(), get()) }
+        scope<Module1FragmentDChildB> {
+            viewModel { Module1FragmentDViewModel() }
+        }*/
+
+        /*scope<Module1FragmentDChildA> {
+            scoped { Module1FragmentDViewModel(get()) }
         }
 
-        //another set of changes
+        scope<Module1FragmentDChildB> {
+            scoped { Module1FragmentDViewModel(get()) }
+        }*/
     }
 }
 //endregion

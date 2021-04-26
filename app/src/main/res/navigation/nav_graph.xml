@@ -22,18 +22,27 @@
         tools:layout="@layout/module_1_fragment_b">
         <action
             android:id="@+id/action_module_1_fragment_b_to_module_1_fragment_C"
-            app:destination="@id/module_1_fragment_C" />
+            app:destination="@id/module_1_fragment_c" />
     </fragment>
 
     <fragment
-        android:id="@+id/module_1_fragment_C"
+        android:id="@+id/module_1_fragment_c"
         android:name="com.github.jairrab.koinexercise.Module1FragmentC"
-        android:label="module_1_fragment_C"
+        android:label="module_1_fragment_c"
         tools:layout="@layout/module_1_fragment_c">
         <argument
             android:name="data_1"
             android:defaultValue="Tree"
             app:argType="string" />
+        <action
+            android:id="@+id/action_module_1_fragment_c_to_module_1_fragment_d"
+            app:destination="@id/module_1_fragment_d" />
     </fragment>
+
+    <fragment
+        android:id="@+id/module_1_fragment_d"
+        android:name="com.github.jairrab.koinexercise.Module1FragmentD"
+        android:label="module_1_fragment_d"
+        tools:layout="@layout/module_1_fragment_d" />
 
 </navigation>
