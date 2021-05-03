@@ -1,6 +1,5 @@
 package com.github.jairrab.koinexercise
 
-import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,31 +10,15 @@ import androidx.navigation.fragment.findNavController
 import com.github.jairrab.koinexercise.databinding.*
 import com.github.jairrab.viewbindingutility.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.scope.activityRetainedScope
 import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinScopeComponent
-import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 
-//region APPLICATION
-class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-
-        // Start Koin
-        startKoin {
-            androidLogger()
-            androidContext(this@MyApplication)
-            modules(Modules.appModule)
-        }
-    }
-}
 //endregion
 
 //region MAIN ACTIVITY
