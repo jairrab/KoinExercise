@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import com.github.jairrab.koinexercise.databinding.*
@@ -14,12 +13,12 @@ import com.github.jairrab.viewbindingutility.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
+import org.koin.androidx.scope.activityRetainedScope
 import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.stateViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinScopeComponent
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -40,12 +39,12 @@ class MyApplication : Application() {
 //endregion
 
 //region MAIN ACTIVITY
-class MainActivity : AppCompatActivity(), AndroidScopeComponent {
+class MainActivity : AppCompatActivity(), KoinScopeComponent {
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
-    override val scope: Scope by activityScope()
+    override val scope: Scope by activityRetainedScope()
 
     // Lazy injected MySimplePresenter
-    private val presenter by inject<MySimplePresenter>()
+    private val presenter:MySimplePresenter by inject()
 
     //Lazy inject ViewModel
     private val viewModel by stateViewModel<ActivityViewModel>(
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
             binding.text2.text = it
         })
 
-        binding.text3.isVisible = false
+        //binding.text3.isVisible = false
         binding.text3.text = presenter.sayHello()
 
         binding.button.setOnClickListener {
@@ -99,7 +98,7 @@ class ActivityViewModel(
 }
 
 class MySimplePresenter() {
-    fun sayHello() = "ActivityRetained Scoped Object\n$this"
+    fun sayHello() = "Hello from $this"
 }
 //endregion
 
@@ -110,6 +109,10 @@ class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a) {
     private val viewModel by stateViewModel<Module1FragmentAViewModel>(
         state = { bundleOf("frag_a_args" to "SavedStateHandle initialized w/ Fragment A bundle") }
     )
+
+    private val mySimplePresenter: MySimplePresenter by lazy {
+        (requireActivity() as KoinScopeComponent).scope.get()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -131,6 +134,9 @@ class Module1FragmentA : BaseFragment(R.layout.module_1_fragment_a) {
             val bundle = bundleOf("frag_b_args" to value)
             navigate(R.id.action_module_1_fragment_a_to_module_1_fragment_b, bundle)
         }
+
+        val hello = mySimplePresenter.sayHello()
+        Log.v("koin_test", "$hello")
     }
 }
 
