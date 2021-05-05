@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".MainActivity">
+    tools:context=".Activity1">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text1"

@@ -22,7 +22,7 @@ import org.koin.dsl.module
 //endregion
 
 //region MAIN ACTIVITY
-class MainActivity : AppCompatActivity(), KoinScopeComponent {
+class Activity1 : AppCompatActivity(), KoinScopeComponent {
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
     override val scope: Scope by activityRetainedScope()
 
@@ -360,7 +360,7 @@ object Modules {
         //factory { MySimplePresenter(get()) }
 
         //scope - to produce an instance tied to a scope
-        scope<MainActivity> {
+        scope<Activity1> {
             scoped { MySimplePresenter() }
         }
 
